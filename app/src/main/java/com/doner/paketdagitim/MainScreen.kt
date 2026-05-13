@@ -20,12 +20,11 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(viewModel: MainViewModel = viewModel()) {
-    val nokta1Normal by viewModel.nokta1Normal.collectAsState()
-    val nokta1Ekonomik by viewModel.nokta1Ekonomik.collectAsState()
-    val nokta2Normal by viewModel.nokta2Normal.collectAsState()
-    val nokta2Ekonomik by viewModel.nokta2Ekonomik.collectAsState()
-    val nokta3Normal by viewModel.nokta3Normal.collectAsState()
-    val nokta3Ekonomik by viewModel.nokta3Ekonomik.collectAsState()
+    val girisNormal by viewModel.girisNormal.collectAsState()
+    val girisEkonomik by viewModel.girisEkonomik.collectAsState()
+    val seciliNokta by viewModel.seciliNokta.collectAsState()
+    val toplamNormal by viewModel.toplamNormal.collectAsState()
+    val toplamEkonomik by viewModel.toplamEkonomik.collectAsState()
     
     val nokta1Isim by viewModel.nokta1Isim.collectAsState()
     val nokta2Isim by viewModel.nokta2Isim.collectAsState()
@@ -44,11 +43,9 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Paket Dagitim Takip") },
+                title = { Text("Paket Dagitim") },
                 actions = {
-                    IconButton(onClick = { fiyatDialog = true }) {
-                        Text("💰", fontSize = 20.sp)
-                    }
+                    TextButton(onClick = { fiyatDialog = true }) { Text("💰", fontSize = 20.sp) }
                     IconButton(onClick = { isimDialog = true }) {
                         Icon(Icons.Filled.Settings, "Ayarlar")
                     }
@@ -77,122 +74,171 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
                 Spacer(modifier = Modifier.height(12.dp))
             }
             
-            // Tarih ve fiyat bilgisi
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text(viewModel.bugununTarihi, fontSize = 14.sp, color = MaterialTheme.colorScheme.primary)
-                Text("Normal: ${normalFiyat}₺ | Eko: ${ekonomikFiyat}₺", fontSize = 13.sp, color = Color.Gray)
+            // Tarih
+            Text(viewModel.bugununTarihi, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+            Spacer(modifier = Modifier.height(12.dp))
+            
+            // Nokta Secimi
+            Text("📍 DÖNER SECIMI", fontWeight = FontWeight.Bold, fontSize = 14.sp, color = Color.Gray)
+            Spacer(modifier = Modifier.height(8.dp))
+            
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FilterChip(
+                    selected = seciliNokta == 1,
+                    onClick = { viewModel.noktaSec(1) },
+                    label = { Text(nokta1Isim) },
+                    modifier = Modifier.weight(1f)
+                )
+                FilterChip(
+                    selected = seciliNokta == 2,
+                    onClick = { viewModel.noktaSec(2) },
+                    label = { Text(nokta2Isim) },
+                    modifier = Modifier.weight(1f)
+                )
+                FilterChip(
+                    selected = seciliNokta == 3,
+                    onClick = { viewModel.noktaSec(3) },
+                    label = { Text(nokta3Isim) },
+                    modifier = Modifier.weight(1f)
+                )
             }
-            
-            Spacer(modifier = Modifier.height(12.dp))
-            
-            // Nokta 1
-            NoktaKarti(
-                isim = nokta1Isim,
-                normalAdet = nokta1Normal,
-                ekonomikAdet = nokta1Ekonomik,
-                normalFiyat = normalFiyat,
-                ekonomikFiyat = ekonomikFiyat,
-                onNormalArttir = { viewModel.nokta1NormalArttir() },
-                onNormalAzalt = { viewModel.nokta1NormalAzalt() },
-                onEkonomikArttir = { viewModel.nokta1EkonomikArttir() },
-                onEkonomikAzalt = { viewModel.nokta1EkonomikAzalt() },
-                color = Color(0xFF2196F3)
-            )
-            
-            Spacer(modifier = Modifier.height(12.dp))
-            
-            // Nokta 2
-            NoktaKarti(
-                isim = nokta2Isim,
-                normalAdet = nokta2Normal,
-                ekonomikAdet = nokta2Ekonomik,
-                normalFiyat = normalFiyat,
-                ekonomikFiyat = ekonomikFiyat,
-                onNormalArttir = { viewModel.nokta2NormalArttir() },
-                onNormalAzalt = { viewModel.nokta2NormalAzalt() },
-                onEkonomikArttir = { viewModel.nokta2EkonomikArttir() },
-                onEkonomikAzalt = { viewModel.nokta2EkonomikAzalt() },
-                color = Color(0xFF4CAF50)
-            )
-            
-            Spacer(modifier = Modifier.height(12.dp))
-            
-            // Nokta 3
-            NoktaKarti(
-                isim = nokta3Isim,
-                normalAdet = nokta3Normal,
-                ekonomikAdet = nokta3Ekonomik,
-                normalFiyat = normalFiyat,
-                ekonomikFiyat = ekonomikFiyat,
-                onNormalArttir = { viewModel.nokta3NormalArttir() },
-                onNormalAzalt = { viewModel.nokta3NormalAzalt() },
-                onEkonomikArttir = { viewModel.nokta3EkonomikArttir() },
-                onEkonomikAzalt = { viewModel.nokta3EkonomikAzalt() },
-                color = Color(0xFFFF9800)
-            )
             
             Spacer(modifier = Modifier.height(20.dp))
             
-            // Gün Sonu Raporu
+            // Siparis Girisi
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+            ) {
+                Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        "📝 YENI SIPARIS: ${viewModel.seciliNoktaIsim}",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp
+                    )
+                    
+                    Spacer(modifier = Modifier.height(16.dp))
+                    
+                    // Normal Paket
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text("Normal (${normalFiyat}₺)", fontSize = 16.sp, modifier = Modifier.weight(1f))
+                        TextButton(onClick = { viewModel.girisNormalAzalt() }) {
+                            Text("➖", fontSize = 24.sp, color = Color.Red)
+                        }
+                        Text("$girisNormal", fontSize = 28.sp, fontWeight = FontWeight.Bold, color = Color(0xFF2196F3))
+                        TextButton(onClick = { viewModel.girisNormalArttir() }) {
+                            Text("➕", fontSize = 24.sp, color = Color(0xFF2196F3))
+                        }
+                    }
+                    
+                    Spacer(modifier = Modifier.height(8.dp))
+                    
+                    // Ekonomik Paket
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text("Ekonomik (${ekonomikFiyat}₺)", fontSize = 16.sp, modifier = Modifier.weight(1f))
+                        TextButton(onClick = { viewModel.girisEkonomikAzalt() }) {
+                            Text("➖", fontSize = 24.sp, color = Color.Red)
+                        }
+                        Text("$girisEkonomik", fontSize = 28.sp, fontWeight = FontWeight.Bold, color = Color(0xFFFF9800))
+                        TextButton(onClick = { viewModel.girisEkonomikArttir() }) {
+                            Text("➕", fontSize = 24.sp, color = Color(0xFFFF9800))
+                        }
+                    }
+                    
+                    Spacer(modifier = Modifier.height(16.dp))
+                    
+                    // Onayla ve Geri Al
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Button(
+                            onClick = { viewModel.siparisiOnayla() },
+                            modifier = Modifier.weight(2f),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
+                        ) {
+                            Text("✅ ONAYLA", fontSize = 16.sp)
+                        }
+                        OutlinedButton(
+                            onClick = { viewModel.sonIslemiGeriAl() },
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Text("↩️", fontSize = 20.sp)
+                        }
+                    }
+                }
+            }
+            
+            Spacer(modifier = Modifier.height(20.dp))
+            
+            // Alt Toplam
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
                 elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
             ) {
                 Column(modifier = Modifier.padding(20.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text("GUN SONU RAPORU", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                    Text("📊 ALT TOPLAM", fontWeight = FontWeight.Bold, fontSize = 18.sp)
                     Spacer(modifier = Modifier.height(12.dp))
                     
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Text("Normal", fontSize = 13.sp, color = Color.Gray)
-                            Text("${viewModel.toplamNormal} adet", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                            Text("${paraFormat.format(viewModel.toplamNormal * normalFiyat)} ₺", fontSize = 14.sp, color = Color(0xFF2196F3))
+                            Text("$toplamNormal adet", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                            Text("${paraFormat.format(toplamNormal * normalFiyat)} ₺", fontSize = 14.sp, color = Color(0xFF2196F3))
                         }
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Text("Ekonomik", fontSize = 13.sp, color = Color.Gray)
-                            Text("${viewModel.toplamEkonomik} adet", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                            Text("${paraFormat.format(viewModel.toplamEkonomik * ekonomikFiyat)} ₺", fontSize = 14.sp, color = Color(0xFFFF9800))
+                            Text("$toplamEkonomik adet", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                            Text("${paraFormat.format(toplamEkonomik * ekonomikFiyat)} ₺", fontSize = 14.sp, color = Color(0xFFFF9800))
                         }
                     }
                     
                     Spacer(modifier = Modifier.height(12.dp))
-                    Divider()
+                    HorizontalDivider()
                     Spacer(modifier = Modifier.height(12.dp))
                     
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text("Toplam Paket", fontSize = 14.sp)
-                            Text("${viewModel.toplamPaket}", fontSize = 32.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
-                        }
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text("Toplam Kazanc", fontSize = 14.sp)
-                            Text("${paraFormat.format(viewModel.toplamKazanc)} ₺", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Color(0xFF2E7D32))
-                        }
-                    }
+                    Text("Toplam: ${viewModel.toplamPaket} paket", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                    Text(
+                        "${paraFormat.format(viewModel.toplamKazanc)} ₺",
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF2E7D32)
+                    )
                 }
             }
             
             Spacer(modifier = Modifier.height(16.dp))
             
-            // Butonlar
+            // Rapor Butonlari
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 Button(
                     onClick = { viewModel.raporuKaydet() },
                     modifier = Modifier.weight(1f),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
-                ) { Text("Raporu Kaydet") }
+                ) { Text("💾 Rapor Kaydet") }
                 
-                OutlinedButton(onClick = { viewModel.sifirla() }, modifier = Modifier.weight(1f)) {
-                    Text("Sifirla")
-                }
+                OutlinedButton(
+                    onClick = { viewModel.gunuSifirla() },
+                    modifier = Modifier.weight(1f),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Red)
+                ) { Text("🔄 Sifirla") }
             }
             
             Spacer(modifier = Modifier.height(24.dp))
             
             // Gecmis Raporlar
             if (raporlar.isNotEmpty()) {
-                Text("KAYITLI RAPORLAR", fontWeight = FontWeight.Bold, fontSize = 18.sp, modifier = Modifier.padding(bottom = 8.dp))
+                Text("📋 KAYITLI RAPORLAR", fontWeight = FontWeight.Bold, fontSize = 18.sp, modifier = Modifier.padding(bottom = 8.dp))
                 raporlar.forEach { rapor ->
                     Card(
                         modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
@@ -205,10 +251,7 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
                         ) {
                             Column {
                                 Text(rapor.tarih, fontWeight = FontWeight.Bold)
-                                Text(
-                                    "${rapor.toplamPaket} paket - ${paraFormat.format(rapor.toplamKazanc)} ₺",
-                                    fontSize = 14.sp, color = Color.Gray
-                                )
+                                Text("${rapor.toplamPaket} paket - ${paraFormat.format(rapor.toplamKazanc)} ₺", fontSize = 14.sp, color = Color.Gray)
                             }
                             IconButton(onClick = { viewModel.raporuSil(rapor) }) {
                                 Icon(Icons.Filled.Delete, "Sil", tint = Color.Red)
@@ -220,7 +263,7 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
         }
     }
     
-    // Isim Degistirme Dialogu
+    // Isim Degistirme
     if (isimDialog) {
         var n1 by remember { mutableStateOf(nokta1Isim) }
         var n2 by remember { mutableStateOf(nokta2Isim) }
@@ -243,7 +286,7 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
         )
     }
     
-    // Fiyat Degistirme Dialogu
+    // Fiyat Degistirme
     if (fiyatDialog) {
         var nf by remember { mutableStateOf(normalFiyat.toString()) }
         var ef by remember { mutableStateOf(ekonomikFiyat.toString()) }
@@ -253,9 +296,9 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
             title = { Text("Paket Fiyatlari") },
             text = {
                 Column {
-                    OutlinedTextField(nf, { nf = it }, label = { Text("Normal Paket Fiyati (TL)") }, modifier = Modifier.fillMaxWidth())
+                    OutlinedTextField(nf, { nf = it }, label = { Text("Normal Paket (TL)") }, modifier = Modifier.fillMaxWidth())
                     Spacer(modifier = Modifier.height(8.dp))
-                    OutlinedTextField(ef, { ef = it }, label = { Text("Ekonomik Paket Fiyati (TL)") }, modifier = Modifier.fillMaxWidth())
+                    OutlinedTextField(ef, { ef = it }, label = { Text("Ekonomik Paket (TL)") }, modifier = Modifier.fillMaxWidth())
                 }
             },
             confirmButton = {
@@ -268,60 +311,5 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
             },
             dismissButton = { TextButton(onClick = { fiyatDialog = false }) { Text("Iptal") } }
         )
-    }
-}
-
-@Composable
-fun NoktaKarti(
-    isim: String,
-    normalAdet: Int,
-    ekonomikAdet: Int,
-    normalFiyat: Int,
-    ekonomikFiyat: Int,
-    onNormalArttir: () -> Unit,
-    onNormalAzalt: () -> Unit,
-    onEkonomikArttir: () -> Unit,
-    onEkonomikAzalt: () -> Unit,
-    color: Color
-) {
-    Card(modifier = Modifier.fillMaxWidth(), elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)) {
-        Column(modifier = Modifier.padding(12.dp)) {
-            Text("📍 $isim", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-            Spacer(modifier = Modifier.height(8.dp))
-            
-            // Normal Paket
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text("Normal (${normalFiyat}₺)", fontSize = 14.sp, modifier = Modifier.weight(1f))
-                TextButton(onClick = onNormalAzalt) { Text("-", color = Color.Red, fontSize = 20.sp) }
-                Text("$normalAdet", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = color)
-                TextButton(onClick = onNormalArttir) { Text("+", color = color, fontSize = 20.sp) }
-            }
-            
-            // Ekonomik Paket
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text("Ekonomik (${ekonomikFiyat}₺)", fontSize = 14.sp, modifier = Modifier.weight(1f))
-                TextButton(onClick = onEkonomikAzalt) { Text("-", color = Color.Red, fontSize = 20.sp) }
-                Text("$ekonomikAdet", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color(0xFFFF9800))
-                TextButton(onClick = onEkonomikArttir) { Text("+", color = Color(0xFFFF9800), fontSize = 20.sp) }
-            }
-            
-            // Nokta toplami
-            val noktaToplam = normalAdet + ekonomikAdet
-            val noktaKazanc = (normalAdet * normalFiyat) + (ekonomikAdet * ekonomikFiyat)
-            Text(
-                "Toplam: $noktaToplam paket - ${noktaKazanc} ₺",
-                fontSize = 13.sp,
-                color = Color.Gray,
-                modifier = Modifier.padding(top = 4.dp)
-            )
-        }
     }
 }
