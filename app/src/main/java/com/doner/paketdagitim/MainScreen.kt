@@ -324,3 +324,25 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
         )
     }
 }
+@Composable
+fun RaporSatiri(isim: String, normal: Int, ekonomik: Int, tutar: Int) {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(isim, fontSize = 14.sp, modifier = Modifier.weight(1f))
+        Text(
+            "${normal}N + ${ekonomik}E",
+            fontSize = 13.sp,
+            color = Color.Gray,
+            modifier = Modifier.width(70.dp)
+        )
+        Text(
+            "$tutar ₺",
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFF2196F3),
+            modifier = Modifier.width(70.dp)
+        )
+    }
+}
