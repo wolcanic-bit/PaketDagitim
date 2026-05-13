@@ -236,7 +236,7 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
             
             Spacer(modifier = Modifier.height(24.dp))
             
-            // Gecmis Raporlar
+                       // Gecmis Raporlar
             if (raporlar.isNotEmpty()) {
                 Text("📋 KAYITLI RAPORLAR", fontWeight = FontWeight.Bold, fontSize = 18.sp, modifier = Modifier.padding(bottom = 8.dp))
                 raporlar.forEach { rapor ->
@@ -244,18 +244,29 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
                         modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
                         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                     ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth().padding(12.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Column {
-                                Text(rapor.tarih, fontWeight = FontWeight.Bold)
-                                Text("${rapor.toplamPaket} paket - ${paraFormat.format(rapor.toplamKazanc)} ₺", fontSize = 14.sp, color = Color.Gray)
+                        Column(modifier = Modifier.padding(12.dp)) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text("📅 ${rapor.tarih}", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text("${rapor.toplamPaket} paket", fontSize = 14.sp, color = Color.Gray)
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text("${paraFormat.format(rapor.toplamKazanc)} ₺", fontWeight = FontWeight.Bold, color = Color(0xFF2E7D32))
+                                    IconButton(onClick = { viewModel.raporuSil(rapor) }, modifier = Modifier.size(32.dp)) {
+                                        Icon(Icons.Filled.Delete, "Sil", tint = Color.Red, modifier = Modifier.size(18.dp))
+                                    }
+                                }
                             }
-                            IconButton(onClick = { viewModel.raporuSil(rapor) }) {
-                                Icon(Icons.Filled.Delete, "Sil", tint = Color.Red)
-                            }
+                            Divider(modifier = Modifier.padding(vertical = 4.dp))
+                            // Nokta 1
+                            RaporSatiri("🥙 ${rapor.nokta1Isim}", rapor.nokta1Normal, rapor.nokta1Ekonomik, rapor.nokta1Tutar)
+                            // Nokta 2
+                            RaporSatiri("🥙 ${rapor.nokta2Isim}", rapor.nokta2Normal, rapor.nokta2Ekonomik, rapor.nokta2Tutar)
+                            // Nokta 3
+                            RaporSatiri("🥙 ${rapor.nokta3Isim}", rapor.nokta3Normal, rapor.nokta3Ekonomik, rapor.nokta3Tutar)
                         }
                     }
                 }
