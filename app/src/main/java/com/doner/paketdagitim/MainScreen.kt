@@ -204,7 +204,7 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
                     }
                     
                     Spacer(modifier = Modifier.height(12.dp))
-                    HorizontalDivider()
+                    Divider()
                     Spacer(modifier = Modifier.height(12.dp))
                     
                     Text("Toplam: ${viewModel.toplamPaket} paket", fontSize = 20.sp, fontWeight = FontWeight.Bold)
