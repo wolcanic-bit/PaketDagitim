@@ -339,7 +339,7 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
                                     }
                                 }
                             }
-                            HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+                            Divider(modifier = Modifier.padding(vertical = 4.dp))
                             Text(text = "${rapor.nokta1Isim}: ${rapor.nokta1Normal}N + ${rapor.nokta1Ekonomik}E = ${rapor.nokta1Tutar} TL", fontSize = 14.sp)
                             Text(text = "${rapor.nokta2Isim}: ${rapor.nokta2Normal}N + ${rapor.nokta2Ekonomik}E = ${rapor.nokta2Tutar} TL", fontSize = 14.sp)
                             Text(text = "${rapor.nokta3Isim}: ${rapor.nokta3Normal}N + ${rapor.nokta3Ekonomik}E = ${rapor.nokta3Tutar} TL", fontSize = 14.sp)
