@@ -113,7 +113,7 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
             
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 Button(onClick = { viewModel.raporuKaydet() }, modifier = Modifier.weight(1f), colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))) {
-                    Icon(Icons.Default.Save, contentDescription = null)
+                    Icon(Icons.Filled.Save, contentDescription = null)
                     Spacer(modifier = Modifier.width(8.dp))
                     Text("Raporu Kaydet")
                 }
@@ -177,7 +177,7 @@ fun NoktaKarti(isim: String, adet: Int, onArttir: () -> Unit, onAzalt: () -> Uni
                 Text(text = "$adet paket", fontSize = 14.sp, color = Color.Gray)
             }
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                IconButton(onClick = onAzalt) { Icon(Icons.Default.Remove, "Azalt", tint = Color.Red) }
+                Icon(Icons.Filled.Remove, "Azalt", tint = Color.Red)
                 Text(text = "$adet", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = color)
                 IconButton(onClick = onArttir) { Icon(Icons.Default.Add, "Arttir", tint = color) }
             }
