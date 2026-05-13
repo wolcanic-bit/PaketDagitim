@@ -112,11 +112,9 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
             Spacer(modifier = Modifier.height(16.dp))
             
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                Button(onClick = { viewModel.raporuKaydet() }, modifier = Modifier.weight(1f), colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))) {
-                    Icon(Icons.Filled.Save, contentDescription = null)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Raporu Kaydet")
-                }
+               Button(onClick = { viewModel.raporuKaydet() }, modifier = Modifier.weight(1f), colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))) {
+    Text("💾 Raporu Kaydet")
+}
                 OutlinedButton(onClick = { viewModel.sifirla() }, modifier = Modifier.weight(1f)) {
                     Icon(Icons.Default.Refresh, contentDescription = null)
                     Spacer(modifier = Modifier.width(8.dp))
@@ -179,7 +177,7 @@ fun NoktaKarti(isim: String, adet: Int, onArttir: () -> Unit, onAzalt: () -> Uni
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Icon(Icons.Filled.Remove, "Azalt", tint = Color.Red)
                 Text(text = "$adet", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = color)
-                IconButton(onClick = onArttir) { Icon(Icons.Default.Add, "Arttir", tint = color) }
+                IconButton(onClick = onAzalt) { Text("➖", color = Color.Red, fontSize = 20.sp) }
             }
         }
     }
