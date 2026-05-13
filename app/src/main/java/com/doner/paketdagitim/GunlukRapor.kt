@@ -7,10 +7,15 @@ import androidx.room.PrimaryKey
 data class GunlukRapor(
     @PrimaryKey
     val tarih: String,
-    val nokta1Paket: Int = 0,
-    val nokta2Paket: Int = 0,
-    val nokta3Paket: Int = 0,
+    val nokta1Normal: Int = 0,
+    val nokta1Ekonomik: Int = 0,
+    val nokta2Normal: Int = 0,
+    val nokta2Ekonomik: Int = 0,
+    val nokta3Normal: Int = 0,
+    val nokta3Ekonomik: Int = 0,
     val toplamPaket: Int = 0,
     val toplamKazanc: Int = 0,
+    val normalFiyat: Int = 80,
+    val ekonomikFiyat: Int = 25,
     val kayitZamani: Long = System.currentTimeMillis()
 )
