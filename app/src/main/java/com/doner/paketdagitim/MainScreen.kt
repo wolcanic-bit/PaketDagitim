@@ -35,10 +35,10 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("📦 Paket Dağıtım Takip") },
+                title = { Text("Paket Dagitim Takip") },
                 actions = {
                     IconButton(onClick = { isimDialog = true }) {
-                        Icon(Icons.Default.Settings, "Nokta İsimleri")
+                        Icon(Icons.Filled.Settings, "Nokta Isimleri")
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -70,7 +70,7 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
             }
             
             Text(
-                text = "📅 ${viewModel.bugununTarihi}",
+                text = viewModel.bugununTarihi,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Medium,
                 color = MaterialTheme.colorScheme.primary
@@ -92,7 +92,7 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
                 elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
             ) {
                 Column(modifier = Modifier.padding(20.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(text = "📊 GÜN SONU RAPORU", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                    Text(text = "GUN SONU RAPORU", fontWeight = FontWeight.Bold, fontSize = 18.sp)
                     Spacer(modifier = Modifier.height(12.dp))
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -100,41 +100,39 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
                             Text(text = "${viewModel.toplamPaket}", fontSize = 36.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
                         }
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text("Toplam Kazanç", fontSize = 14.sp)
-                            Text(text = "${paraFormat.format(viewModel.toplamKazanc)} ₺", fontSize = 28.sp, fontWeight = FontWeight.Bold, color = Color(0xFF2E7D32))
+                            Text("Toplam Kazanc", fontSize = 14.sp)
+                            Text(text = "${paraFormat.format(viewModel.toplamKazanc)} TL", fontSize = 28.sp, fontWeight = FontWeight.Bold, color = Color(0xFF2E7D32))
                         }
                     }
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text(text = "Birim Fiyat: 80 ₺", fontSize = 13.sp, color = Color.Gray)
+                    Text(text = "Birim Fiyat: 80 TL", fontSize = 13.sp, color = Color.Gray)
                 }
             }
             
             Spacer(modifier = Modifier.height(16.dp))
             
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-               Button(onClick = { viewModel.raporuKaydet() }, modifier = Modifier.weight(1f), colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))) {
-    Text("💾 Raporu Kaydet")
-}
+                Button(onClick = { viewModel.raporuKaydet() }, modifier = Modifier.weight(1f), colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))) {
+                    Text("Raporu Kaydet")
+                }
                 OutlinedButton(onClick = { viewModel.sifirla() }, modifier = Modifier.weight(1f)) {
-                    Icon(Icons.Default.Refresh, contentDescription = null)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Sıfırla")
+                    Text("Sifirla")
                 }
             }
             
             Spacer(modifier = Modifier.height(24.dp))
             
             if (raporlar.isNotEmpty()) {
-                Text(text = "📋 KAYITLI RAPORLAR", fontWeight = FontWeight.Bold, fontSize = 18.sp, modifier = Modifier.padding(bottom = 8.dp))
+                Text(text = "KAYITLI RAPORLAR", fontWeight = FontWeight.Bold, fontSize = 18.sp, modifier = Modifier.padding(bottom = 8.dp))
                 raporlar.forEach { rapor ->
                     Card(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp), elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)) {
                         Row(modifier = Modifier.fillMaxWidth().padding(12.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                             Column {
-                                Text(text = "📅 ${rapor.tarih}", fontWeight = FontWeight.Bold)
-                                Text(text = "${rapor.toplamPaket} paket - ${paraFormat.format(rapor.toplamKazanc)} ₺", fontSize = 14.sp, color = Color.Gray)
+                                Text(text = rapor.tarih, fontWeight = FontWeight.Bold)
+                                Text(text = "${rapor.toplamPaket} paket - ${paraFormat.format(rapor.toplamKazanc)} TL", fontSize = 14.sp, color = Color.Gray)
                             }
                             IconButton(onClick = { viewModel.raporuSil(rapor) }) {
-                                Icon(Icons.Default.Delete, contentDescription = "Sil", tint = Color.Red)
+                                Icon(Icons.Filled.Delete, contentDescription = "Sil", tint = Color.Red)
                             }
                         }
                     }
@@ -150,7 +148,7 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
         
         AlertDialog(
             onDismissRequest = { isimDialog = false },
-            title = { Text("Nokta İsimlerini Düzenle") },
+            title = { Text("Nokta Isimlerini Duzenle") },
             text = {
                 Column {
                     OutlinedTextField(value = n1, onValueChange = { n1 = it }, label = { Text("1. Nokta") }, modifier = Modifier.fillMaxWidth())
@@ -161,7 +159,7 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
                 }
             },
             confirmButton = { TextButton(onClick = { viewModel.noktaIsimleriniGuncelle(n1, n2, n3); isimDialog = false }) { Text("Kaydet") } },
-            dismissButton = { TextButton(onClick = { isimDialog = false }) { Text("İptal") } }
+            dismissButton = { TextButton(onClick = { isimDialog = false }) { Text("Iptal") } }
         )
     }
 }
@@ -171,13 +169,13 @@ fun NoktaKarti(isim: String, adet: Int, onArttir: () -> Unit, onAzalt: () -> Uni
     Card(modifier = Modifier.fillMaxWidth(), elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)) {
         Row(modifier = Modifier.fillMaxWidth().padding(12.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
             Column {
-                Text(text = "📍 $isim", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                Text(text = "$isim", fontWeight = FontWeight.Bold, fontSize = 16.sp)
                 Text(text = "$adet paket", fontSize = 14.sp, color = Color.Gray)
             }
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Icon(Icons.Filled.Remove, "Azalt", tint = Color.Red)
+                TextButton(onClick = onAzalt) { Text("-", color = Color.Red, fontSize = 24.sp) }
                 Text(text = "$adet", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = color)
-                IconButton(onClick = onAzalt) { Text("➖", color = Color.Red, fontSize = 20.sp) }
+                TextButton(onClick = onArttir) { Text("+", color = color, fontSize = 24.sp) }
             }
         }
     }
