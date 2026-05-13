@@ -11,26 +11,33 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+data class SonIslem(
+    val noktaIsim: String,
+    val normal: Int,
+    val ekonomik: Int
+)
+
 class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val dao = AppDatabase.getDatabase(application).raporDao()
     
-    // Nokta 1
-    private val _nokta1Normal = MutableStateFlow(0)
-    val nokta1Normal: StateFlow<Int> = _nokta1Normal.asStateFlow()
-    private val _nokta1Ekonomik = MutableStateFlow(0)
-    val nokta1Ekonomik: StateFlow<Int> = _nokta1Ekonomik.asStateFlow()
+    // Gecici giris (siparis ekrani - tek seferlik)
+    private val _girisNormal = MutableStateFlow(0)
+    val girisNormal: StateFlow<Int> = _girisNormal.asStateFlow()
+    private val _girisEkonomik = MutableStateFlow(0)
+    val girisEkonomik: StateFlow<Int> = _girisEkonomik.asStateFlow()
     
-    // Nokta 2
-    private val _nokta2Normal = MutableStateFlow(0)
-    val nokta2Normal: StateFlow<Int> = _nokta2Normal.asStateFlow()
-    private val _nokta2Ekonomik = MutableStateFlow(0)
-    val nokta2Ekonomik: StateFlow<Int> = _nokta2Ekonomik.asStateFlow()
+    // Secili nokta
+    private val _seciliNokta = MutableStateFlow(1)
+    val seciliNokta: StateFlow<Int> = _seciliNokta.asStateFlow()
     
-    // Nokta 3
-    private val _nokta3Normal = MutableStateFlow(0)
-    val nokta3Normal: StateFlow<Int> = _nokta3Normal.asStateFlow()
-    private val _nokta3Ekonomik = MutableStateFlow(0)
-    val nokta3Ekonomik: StateFlow<Int> = _nokta3Ekonomik.asStateFlow()
+    // Alt toplamlar (onaylanmis)
+    private val _toplamNormal = MutableStateFlow(0)
+    val toplamNormal: StateFlow<Int> = _toplamNormal.asStateFlow()
+    private val _toplamEkonomik = MutableStateFlow(0)
+    val toplamEkonomik: StateFlow<Int> = _toplamEkonomik.asStateFlow()
+    
+    // Son islem (geri almak icin)
+    private var sonIslem: SonIslem? = null
     
     // Isimler
     private val _nokta1Isim = MutableStateFlow("Hatay Döner")
@@ -51,10 +58,15 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val _mesaj = MutableStateFlow<String?>(null)
     val mesaj: StateFlow<String?> = _mesaj.asStateFlow()
     
-    val toplamNormal: Int get() = _nokta1Normal.value + _nokta2Normal.value + _nokta3Normal.value
-    val toplamEkonomik: Int get() = _nokta1Ekonomik.value + _nokta2Ekonomik.value + _nokta3Ekonomik.value
-    val toplamPaket: Int get() = toplamNormal + toplamEkonomik
-    val toplamKazanc: Int get() = (toplamNormal * _normalFiyat.value) + (toplamEkonomik * _ekonomikFiyat.value)
+    val toplamPaket: Int get() = _toplamNormal.value + _toplamEkonomik.value
+    val toplamKazanc: Int get() = (_toplamNormal.value * _normalFiyat.value) + (_toplamEkonomik.value * _ekonomikFiyat.value)
+    
+    val seciliNoktaIsim: String get() = when(_seciliNokta.value) {
+        1 -> _nokta1Isim.value
+        2 -> _nokta2Isim.value
+        3 -> _nokta3Isim.value
+        else -> ""
+    }
     
     val bugununTarihi: String
         get() {
@@ -62,23 +74,46 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             return sdf.format(Date())
         }
     
-    // Nokta 1 arttir/azalt
-    fun nokta1NormalArttir() { _nokta1Normal.value++ }
-    fun nokta1NormalAzalt() { if (_nokta1Normal.value > 0) _nokta1Normal.value-- }
-    fun nokta1EkonomikArttir() { _nokta1Ekonomik.value++ }
-    fun nokta1EkonomikAzalt() { if (_nokta1Ekonomik.value > 0) _nokta1Ekonomik.value-- }
+    fun noktaSec(no: Int) { _seciliNokta.value = no }
     
-    // Nokta 2
-    fun nokta2NormalArttir() { _nokta2Normal.value++ }
-    fun nokta2NormalAzalt() { if (_nokta2Normal.value > 0) _nokta2Normal.value-- }
-    fun nokta2EkonomikArttir() { _nokta2Ekonomik.value++ }
-    fun nokta2EkonomikAzalt() { if (_nokta2Ekonomik.value > 0) _nokta2Ekonomik.value-- }
+    fun girisNormalArttir() { _girisNormal.value++ }
+    fun girisNormalAzalt() { if (_girisNormal.value > 0) _girisNormal.value-- }
+    fun girisEkonomikArttir() { _girisEkonomik.value++ }
+    fun girisEkonomikAzalt() { if (_girisEkonomik.value > 0) _girisEkonomik.value-- }
     
-    // Nokta 3
-    fun nokta3NormalArttir() { _nokta3Normal.value++ }
-    fun nokta3NormalAzalt() { if (_nokta3Normal.value > 0) _nokta3Normal.value-- }
-    fun nokta3EkonomikArttir() { _nokta3Ekonomik.value++ }
-    fun nokta3EkonomikAzalt() { if (_nokta3Ekonomik.value > 0) _nokta3Ekonomik.value-- }
+    fun siparisiOnayla() {
+        val n = _girisNormal.value
+        val e = _girisEkonomik.value
+        if (n == 0 && e == 0) {
+            _mesaj.value = "⚠️ Lütfen paket adedi girin!"
+            return
+        }
+        
+        // Son islemi kaydet
+        sonIslem = SonIslem(seciliNoktaIsim, n, e)
+        
+        // Alt toplama ekle
+        _toplamNormal.value += n
+        _toplamEkonomik.value += e
+        
+        _mesaj.value = "✅ $seciliNoktaIsim: +$n normal, +$e ekonomik eklendi"
+        
+        // Girisi sifirla
+        _girisNormal.value = 0
+        _girisEkonomik.value = 0
+    }
+    
+    fun sonIslemiGeriAl() {
+        val islem = sonIslem
+        if (islem != null) {
+            _toplamNormal.value -= islem.normal
+            _toplamEkonomik.value -= islem.ekonomik
+            _mesaj.value = "↩️ Geri alındı: ${islem.noktaIsim} -${islem.normal} normal, -${islem.ekonomik} ekonomik"
+            sonIslem = null
+        } else {
+            _mesaj.value = "⚠️ Geri alınacak işlem yok!"
+        }
+    }
     
     fun noktaIsimleriniGuncelle(n1: String, n2: String, n3: String) {
         _nokta1Isim.value = n1
@@ -92,21 +127,25 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
     
     fun sifirla() {
-        _nokta1Normal.value = 0; _nokta1Ekonomik.value = 0
-        _nokta2Normal.value = 0; _nokta2Ekonomik.value = 0
-        _nokta3Normal.value = 0; _nokta3Ekonomik.value = 0
+        _girisNormal.value = 0
+        _girisEkonomik.value = 0
+    }
+    
+    fun gunuSifirla() {
+        _toplamNormal.value = 0
+        _toplamEkonomik.value = 0
+        _girisNormal.value = 0
+        _girisEkonomik.value = 0
+        sonIslem = null
     }
     
     fun raporuKaydet() {
         viewModelScope.launch {
             val rapor = GunlukRapor(
                 tarih = bugununTarihi,
-                nokta1Normal = _nokta1Normal.value,
-                nokta1Ekonomik = _nokta1Ekonomik.value,
-                nokta2Normal = _nokta2Normal.value,
-                nokta2Ekonomik = _nokta2Ekonomik.value,
-                nokta3Normal = _nokta3Normal.value,
-                nokta3Ekonomik = _nokta3Ekonomik.value,
+                nokta1Normal = 0, nokta1Ekonomik = 0,
+                nokta2Normal = 0, nokta2Ekonomik = 0,
+                nokta3Normal = 0, nokta3Ekonomik = 0,
                 toplamPaket = toplamPaket,
                 toplamKazanc = toplamKazanc,
                 normalFiyat = _normalFiyat.value,
